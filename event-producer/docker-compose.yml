@@ -1,0 +1,11 @@
+mq:
+  image: rabbitmq:3.5.6-management
+  expose:
+      - "5672"
+      - "15672"
+  ports:
+      - 5672:5672
+      - 15672:15672
+  environment:
+    RABBITMQ_DEFAULT_USER: "admin"
+    RABBITMQ_DEFAULT_PASS: "admin"
