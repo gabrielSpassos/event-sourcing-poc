@@ -1,11 +1,31 @@
-mq:
-  image: rabbitmq:3.5.6-management
-  expose:
-      - "5672"
-      - "15672"
-  ports:
-      - 5672:5672
-      - 15672:15672
-  environment:
-    RABBITMQ_DEFAULT_USER: "admin"
-    RABBITMQ_DEFAULT_PASS: "admin"
+version: "3"
+services:
+  mongo:
+    container_name: mongo
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      event-sourcing-poc:
+        ipv4_address: 10.5.0.2
+  mq:
+    image: rabbitmq:3.5.6-management
+    expose:
+        - "5672"
+        - "15672"
+    ports:
+        - 5672:5672
+        - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: "admin"
+      RABBITMQ_DEFAULT_PASS: "admin"
+    networks:
+      event-sourcing-poc:
+        ipv4_address: 10.5.0.3
+
+networks:
+  event-sourcing-poc:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
