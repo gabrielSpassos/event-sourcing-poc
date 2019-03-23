@@ -3,6 +3,7 @@ package com.gabrielpassos.event.producer.routes;
 import com.gabrielpassos.event.producer.configs.RabbitConfig;
 import com.gabrielpassos.event.producer.model.Event;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,9 @@ public class ProducerRoute extends RouteBuilder {
     @Override
     public void configure() {
         from("direct:createEvent")
+                .routeId("eventProducer")
                 .validate(this::isEventValid)
+                .log(LoggingLevel.INFO, "Sending event ${body} to rabbit exchange")
                 .marshal()
                 .json(JsonLibrary.Jackson)
                 .to(buildRabbitUri());
