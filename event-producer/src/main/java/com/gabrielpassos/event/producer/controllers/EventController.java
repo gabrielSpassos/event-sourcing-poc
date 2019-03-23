@@ -2,14 +2,15 @@ package com.gabrielpassos.event.producer.controllers;
 
 import com.gabrielpassos.event.producer.controllers.dto.EventDTO;
 import com.gabrielpassos.event.producer.model.Event;
-import com.gabrielpassos.event.producer.service.ProducerService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.camel.ProducerTemplate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,12 +23,12 @@ import java.util.stream.Stream;
 public class EventController extends BaseVersion {
 
     private ModelMapper modelMapper;
-    private ProducerService producerService;
+    private ProducerTemplate producerTemplate;
 
     @Autowired
-    public EventController(ModelMapper modelMapper, ProducerService producerService) {
+    public EventController(ModelMapper modelMapper, ProducerTemplate producerTemplate) {
         this.modelMapper = modelMapper;
-        this.producerService = producerService;
+        this.producerTemplate = producerTemplate;
     }
 
     @PostMapping(value = "/events")
@@ -42,9 +43,9 @@ public class EventController extends BaseVersion {
     public ResponseEntity<?> createEvent(@RequestBody @Valid EventDTO eventDTO) {
         return Stream.of(eventDTO)
                 .map(this::convertDTOToEvent)
-                .map(event -> producerService.sendEventToStore(event))
+                .peek(event -> producerTemplate.sendBody("direct:createEvent", event))
                 .map(this::convertModelToDTO)
-                .map(ResponseEntity::ok)
+                .map(this::buildCreatedResponseEntity)
                 .findFirst()
                 .get();
     }
@@ -55,5 +56,9 @@ public class EventController extends BaseVersion {
 
     private EventDTO convertModelToDTO (Event event) {
         return modelMapper.map(event, EventDTO.class);
+    }
+
+    private ResponseEntity buildCreatedResponseEntity(Object object) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(object);
     }
 }

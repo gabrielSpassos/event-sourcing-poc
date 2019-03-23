@@ -5,6 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 
 @Configuration
-@ComponentScan(basePackages = {"com.gabrielpassos.event.producer"})
+@ComponentScan(basePackages = {"com"})
 public class ComponentScanner {
 }

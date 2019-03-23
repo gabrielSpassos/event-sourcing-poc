@@ -8,8 +8,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class RabbitConfig {
 
-    @Value("${spring.rabbitmq.exchange}")
-    private String exchange;
-    @Value("${spring.rabbitmq.routingKey}")
-    private String routingKey;
+    @Value("${rabbit.url}")
+    private String rabbitUrl;
+    @Value("${rabbit.port}")
+    private String rabbitPort;
+    @Value("${rabbit.exchange}")
+    private String rabbitExchange;
+    @Value("${rabbit.queue}")
+    private String rabbitQueue;
+    @Value("${rabbit.user}")
+    private String rabbitUser;
+    @Value("${rabbit.pass}")
+    private String rabbitPass;
 }
